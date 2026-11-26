@@ -1,0 +1,22 @@
+[
+ {"question": "What is the total revenue?", "sql": "select round(sum(revenue),2) from gold.fact_orders"},
+ {"question": "How many orders are there?", "sql": "select count(*) from gold.fact_orders"},
+ {"question": "How many customers do we have?", "sql": "select count(*) from gold.dim_customer"},
+ {"question": "What is the average order value?", "sql": "select round(avg(revenue),2) from gold.fact_orders"},
+ {"question": "How many orders have each status?", "sql": "select status, count(*) from gold.fact_orders group by status"},
+ {"question": "Which 5 product categories have the highest revenue?", "sql": "select category, revenue from gold.mart_category_revenue order by revenue desc limit 5"},
+ {"question": "What is the total revenue for each year?", "sql": "select d.year, round(sum(f.revenue),2) from gold.fact_orders f join gold.dim_date d using (date_key) group by d.year"},
+ {"question": "Which day had the highest revenue?", "sql": "select date_key from gold.mart_daily_revenue order by revenue desc limit 1"},
+ {"question": "What is the average rating across all reviews?", "sql": "select round(avg(rating),3) from gold.fact_reviews"},
+ {"question": "How many reviews have a rating of 1?", "sql": "select count(*) from gold.fact_reviews where rating = 1"},
+ {"question": "Which 3 states have the most revenue?", "sql": "select c.state, round(sum(f.revenue),2) from gold.fact_orders f join gold.dim_customer c using (customer_id) group by c.state order by sum(f.revenue) desc limit 3"},
+ {"question": "How many orders have more than 3 items?", "sql": "select count(*) from gold.fact_orders where items > 3"},
+ {"question": "What is the average number of items per order?", "sql": "select round(avg(items),3) from gold.fact_orders"},
+ {"question": "How many distinct products have been sold?", "sql": "select count(distinct product_id) from gold.fact_order_items"},
+ {"question": "What is the total revenue on weekends?", "sql": "select round(sum(f.revenue),2) from gold.fact_orders f join gold.dim_date d using (date_key) where d.is_weekend"},
+ {"question": "How many orders were placed in March 2026?", "sql": "select count(*) from gold.fact_orders f join gold.dim_date d using (date_key) where d.year = 2026 and d.month = 3"},
+ {"question": "Who are the top 3 customers by revenue?", "sql": "select customer_id from gold.fact_orders group by customer_id order by sum(revenue) desc limit 3"},
+ {"question": "How many units were sold in the electronics category?", "sql": "select units from gold.mart_category_revenue where category = 'electronics'"},
+ {"question": "How many cancelled orders are there?", "sql": "select count(*) from gold.fact_orders where status = 'cancelled'"},
+ {"question": "What is the revenue of the beauty category?", "sql": "select revenue from gold.mart_category_revenue where category = 'beauty'"}
+]

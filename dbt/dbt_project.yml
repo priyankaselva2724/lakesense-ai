@@ -1,0 +1,11 @@
+name: lakesense
+version: "1.0.0"
+config-version: 2
+profile: lakesense
+model-paths: ["models"]
+macro-paths: ["macros"]
+models:
+  lakesense:
+    gold:
+      +schema: gold
+      +materialized: table

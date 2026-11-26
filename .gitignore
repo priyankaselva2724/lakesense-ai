@@ -1,0 +1,10 @@
+data/
+outputs/
+__pycache__/
+.pytest_cache/
+.env
+.venv/
+build-log.txt
+.DS_Store
+dbt/logs/
+dbt/target/

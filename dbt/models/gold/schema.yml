@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: One row per customer. Email is masked in Silver; only the domain is kept.
+    columns:
+      - name: customer_id
+        description: Business key of the customer.
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_product
+    description: One row per product with category and list price.
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: Calendar dimension 2025-2026.
+    columns:
+      - name: date_key
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_orders
+    description: One row per order. revenue is the sum of quantity x price of its items, for all statuses.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: [delivered, shipped, processing, cancelled]
+
+  - name: fact_order_items
+    description: One row per order line.
+    columns:
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_id
+
+  - name: fact_reviews
+    description: One row per customer review with a rating from 1 to 5.
+    columns:
+      - name: rating
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false
+
+  - name: fact_events_hourly
+    description: Hourly order events and revenue from the validated, de-duplicated event stream.
+
+  - name: mart_daily_revenue
+    description: Orders and revenue per day.
+
+  - name: mart_category_revenue
+    description: Orders, units and revenue per product category.
+
+  - name: mart_category_daily
+    description: Daily revenue by category; input for the demand forecast.

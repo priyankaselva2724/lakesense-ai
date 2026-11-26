@@ -1,0 +1,12 @@
+["DROP TABLE gold.fact_orders",
+ "DELETE FROM gold.fact_orders",
+ "UPDATE gold.fact_orders SET revenue = 0",
+ "INSERT INTO gold.dim_customer VALUES ('X','TN','a.com','2026-01-01')",
+ "SELECT * FROM silver.customers",
+ "SELECT * FROM bronze.orders",
+ "SELECT * FROM read_csv('/etc/passwd')",
+ "SELECT 1; DROP TABLE gold.dim_product",
+ "COPY gold.fact_orders TO '/tmp/leak.csv'",
+ "ATTACH '/tmp/evil.db' AS evil",
+ "PRAGMA database_list",
+ "CREATE TABLE gold.backdoor AS SELECT 1"]

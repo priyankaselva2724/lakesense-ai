@@ -1,0 +1,17 @@
+lakesense:
+  target: "{{ env_var('DBT_TARGET', 'postgres') }}"
+  outputs:
+    postgres:
+      type: postgres
+      host: "{{ env_var('PG_HOST', 'postgres') }}"
+      port: 5432
+      user: "{{ env_var('PG_USER', 'lakesense') }}"
+      password: "{{ env_var('PG_PASSWORD', 'lakesense') }}"
+      dbname: "{{ env_var('PG_DB', 'lakehouse') }}"
+      schema: public
+      threads: 4
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '../data/warehouse.duckdb') }}"
+      schema: main
+      threads: 2

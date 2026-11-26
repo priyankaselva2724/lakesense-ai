@@ -1,0 +1,12 @@
+version: 2
+sources:
+  - name: silver
+    schema: silver
+    description: Clean, typed, de-duplicated tables produced by the Spark silver job.
+    tables:
+      - name: customers
+      - name: products
+      - name: orders
+      - name: order_items
+      - name: reviews
+      - name: events

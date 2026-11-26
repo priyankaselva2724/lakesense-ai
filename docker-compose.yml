@@ -1,0 +1,74 @@
+# Run everything:  docker compose up -d --build     (first start downloads Spark packages: be patient)
+x-env: &env
+  LAKE_FORMAT: delta
+  LAKE_ROOT: s3a://lake
+  RAW_DIR: /opt/lakesense/data/raw
+  MINIO_ENDPOINT: http://minio:9000
+  MINIO_ROOT_USER: minioadmin
+  MINIO_ROOT_PASSWORD: minioadmin
+  KAFKA_BOOTSTRAP: redpanda:9092
+  PG_JDBC_URL: jdbc:postgresql://postgres:5432/lakehouse
+  PG_HOST: postgres
+  PG_USER: lakesense
+  PG_PASSWORD: lakesense
+  LAKESENSE_PG_DSN: postgresql://llm_readonly:llm_readonly@postgres:5432/lakehouse
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  #MLFLOW_TRACKING_URI: http://mlflow:5000
+
+services:
+  minio:
+    image: pgsty/silo:RELEASE.2026-09-16T00-00-00Z
+    command: server /data --console-address ":9001"
+    environment: {MINIO_ROOT_USER: minioadmin, MINIO_ROOT_PASSWORD: minioadmin}
+    ports: ["9000:9000", "9001:9001"]
+    volumes: [minio_data:/data]
+  redpanda:
+    image: redpandadata/redpanda:latest
+    command:
+      - redpanda
+      - start
+      - --smp=1
+      - --memory=512M
+      - --overprovisioned
+      - --kafka-addr=internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr=internal://redpanda:9092,external://localhost:19092
+    ports: ["19092:19092"]
+  postgres:
+    image: postgres:16
+    environment: {POSTGRES_USER: lakesense, POSTGRES_PASSWORD: lakesense, POSTGRES_DB: lakehouse}
+    ports: ["5432:5432"]
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    command: mlflow server --host 0.0.0.0 --port 5000
+    ports: ["5000:5000"]
+  airflow:
+    build: {context: ., dockerfile: docker/airflow.Dockerfile}
+    command: standalone
+    depends_on: [minio, redpanda, postgres]
+    environment:
+      <<: *env
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/lakesense/airflow/dags
+      AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: "300"
+      AIRFLOW__WEBSERVER__WORKERS: "1"
+    ports: ["8080:8080"]
+    volumes: [".:/opt/lakesense"]
+  app:
+    build: {context: ., dockerfile: docker/app.Dockerfile}
+    command: streamlit run app/streamlit_app.py --server.port=8501 --server.address=0.0.0.0
+    depends_on: [postgres]
+    environment: *env
+    ports: ["8501:8501"]
+    volumes: [".:/opt/lakesense"]
+  api:
+    build: {context: ., dockerfile: docker/app.Dockerfile}
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    depends_on: [postgres]
+    environment: *env
+    ports: ["8000:8000"]
+    volumes: [".:/opt/lakesense"]
+
+volumes: {minio_data: {}, pg_data: {}}

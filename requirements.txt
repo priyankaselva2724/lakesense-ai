@@ -1,0 +1,20 @@
+# Local development and CI (no Docker needed). The Docker images use requirements-full.txt / requirements-app.txt.
+duckdb>=1.0
+pandas>=2.0
+numpy>=1.24
+pyarrow
+sqlglot>=25
+pydantic>=2
+scikit-learn
+lightgbm
+pyyaml
+psycopg2-binary
+pyspark==3.5.1
+dbt-core>=1.8
+dbt-duckdb>=1.8
+fastapi
+httpx
+uvicorn
+streamlit
+anthropic
+pytest

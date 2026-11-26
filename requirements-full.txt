@@ -1,0 +1,15 @@
+pyspark==3.5.1
+delta-spark==3.2.0
+duckdb>=1.0
+pandas>=2.0
+numpy>=1.24
+pyarrow
+sqlglot>=25
+pydantic>=2
+scikit-learn
+lightgbm
+pyyaml
+psycopg2-binary
+confluent-kafka
+anthropic
+mlflow-skinny

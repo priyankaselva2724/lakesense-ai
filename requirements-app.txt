@@ -1,0 +1,13 @@
+duckdb>=1.0
+pandas>=2.0
+numpy>=1.24
+sqlglot>=25
+pydantic>=2
+scikit-learn
+lightgbm
+pyyaml
+psycopg2-binary
+anthropic
+streamlit
+fastapi
+uvicorn
